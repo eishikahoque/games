@@ -1,0 +1,338 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Memory Animals</title>
+  <script src="https://zimjs.org/cdn/1.2.3/createjs_min.js"></script>
+  <script src="https://zimjs.org/cdn/10.7.0/zim.js"></script>
+  <script>
+    // https://zimjs.com - JavaScript Canvas Framework - Code Creativity!
+
+    const frame = new Frame("fit", 1024, 768, light, black);
+    frame.on("ready", () => {
+      const stage = frame.stage;
+      let stageW = frame.width;
+      let stageH = frame.height;
+
+      var first = frame.loadAssets([
+        "images/tiles.bmp",
+        "images/tiles2.bmp",
+        "images/tiles3.bmp",
+        "images/tiles4.bmp",
+        "images/tiles5.bmp",
+        "images/tiles6.bmp",
+        "images/tiles7.bmp",
+        "images/tiles8.bmp",
+        "images/tiles9.bmp",
+        "images/tiger.bmp",
+        "images/tiger2.bmp",
+        "images/tiger3.bmp",
+        "images/panda.bmp",
+        "images/panda2.bmp",
+        "images/panda3.bmp",
+        "images/elephant.bmp",
+        "images/elephant2.bmp",
+        "images/elephant3.bmp",
+        "images/background.png"
+      ]);
+
+      var background = new Container(stageW, stageH).addTo().alp(0.5);
+
+
+
+      // new Rectangle({ width: stageW, height: stageH }).linearGradient(["#F05827", "#F5A42C"], [0, 1], 0, 0, 0, stageW).center(background);
+      // new Circle(250).linearGradient(["#F5A42C", "#111224"], [0, 1], 0, 0, 0, stageW).center(background).mov(0, 350);
+
+      first.on("complete", function () {
+
+        //INSTRUCTIONS
+
+        frame.asset("background.png").addTo(background).center().sca(1.18).mov(-50,-60);
+
+        var instructions = new Container(stageW, stageH).addTo();
+
+        var message = new Label({
+          text: "Find 3 of the same animals to clear the tiles!",
+          size: 30,
+          font: "courier",
+          align: "center",
+          color: black
+        }).animate({
+          props: { alpha: 0, skewX: 100 },
+          from: true,
+          time: 500,
+          wait: 200
+        }).center(instructions).mov(0,-70);
+
+        var button = new Button ({
+          label: "PLAY",
+          width: 200,
+          height: 60,
+          color: black,
+          backgroundColor: "#F5A42C",
+          rollBackgroundColor: "#F05827",
+          corner: 5
+        });
+        button.center(instructions).mov(0,60);
+        button.on("click", function() {
+          instructions.dispose();
+          startGame();
+          // endGame();
+        })
+
+       
+      });
+
+    function startGame() {
+        var card = new Container();
+        var card2 = new Container();
+        var card3 = new Container();
+        var card4 = new Container();
+        var card5 = new Container();
+        var card6 = new Container();
+        var card7 = new Container();
+        var card8 = new Container();
+        var card9 = new Container();
+
+        var tigerTile = frame.asset("tiles.bmp").addTo(card);
+        var tigerTile2 = frame.asset("tiles2.bmp").addTo(card2);
+        var tigerTile3 = frame.asset("tiles3.bmp").addTo(card3);
+        var pandaTile = frame.asset("tiles4.bmp").addTo(card4);
+        var pandaTile2 = frame.asset("tiles5.bmp").addTo(card5);
+        var pandaTile3 = frame.asset("tiles6.bmp").addTo(card6);
+        var elephantTile = frame.asset("tiles7.bmp").addTo(card7);
+        var elephantTile2 = frame.asset("tiles8.bmp").addTo(card8);
+        var elephantTile3 = frame.asset("tiles9.bmp").addTo(card9);
+
+        var tigerOne = frame.asset("tiger.bmp");
+        var tigerTwo = frame.asset("tiger2.bmp");
+        var tigerThree = frame.asset("tiger3.bmp");
+        var pandaOne = frame.asset("panda.bmp");
+        var pandaTwo = frame.asset("panda2.bmp");
+        var pandaThree = frame.asset("panda3.bmp");
+        var elephantOne = frame.asset("elephant.bmp"); 
+        var elephantTwo = frame.asset("elephant2.bmp"); 
+        var elephantThree = frame.asset("elephant3.bmp");
+
+        var tigers = [tigerOne, tigerTwo, tigerThree];
+        var pandas = [pandaOne, pandaTwo, pandaThree];
+        var elephants = [elephantOne, elephantTwo, elephantThree];
+
+        var cards = [card, card2, card3, card4, card5, card6, card7, card8, card9];
+
+        var tile = new Tile({
+          obj: series(shuffle(cards)),
+          cols: 3, rows: 3,
+          spacingH: 10, spacingV: 10,
+          valign: "center",
+          clone: false
+        }).sca(0.75).center();
+
+       
+        // CLICK ON TILES
+
+        var clickedTiles = [];
+        var clickedAnimals = [];
+        var numOfTilesDisposed = 0;
+
+        tile.on("click", function (e) {
+
+
+          if (e.target.id === tigerTile.id && clickedTiles.indexOf(tigerTile) === -1) {
+            tigerTile.alp(0.4);
+            tigerOne.sca(0.8).addTo(card).centerReg(card).animate({
+              props: {scale: 1},
+              ease: "backInOut",
+              time: 500
+            });
+            clickedTiles.push(tigerTile);
+            clickedAnimals.push(tigerOne);
+          } else if (e.target.id === tigerTile2.id && clickedTiles.indexOf(tigerTile2) === -1) {
+            tigerTile2.alp(0.4);
+            tigerTwo.sca(0.8).addTo(card2).centerReg(card2).animate({
+              props: {scale: 1},
+              ease: "backInOut",
+              time: 500
+            });
+            clickedTiles.push(tigerTile2);
+            clickedAnimals.push(tigerTwo);
+          } else if (e.target.id === tigerTile3.id && clickedTiles.indexOf(tigerTile3) === -1) {
+            tigerTile3.alp(0.4);
+            tigerThree.sca(0.8).addTo(card3).centerReg(card3).animate({
+              props: {scale: 1},
+              ease: "backInOut",
+              time: 500
+            });
+            clickedTiles.push(tigerTile3);
+            clickedAnimals.push(tigerThree);
+          } else if (e.target.id === pandaTile.id && clickedTiles.indexOf(pandaTile) === -1) {
+            pandaTile.alp(0.4);
+            pandaOne.sca(0.8).addTo(card4).centerReg(card4).animate({
+              props: {scale: 1},
+              ease: "backInOut",
+              time: 500
+            });
+            clickedTiles.push(pandaTile);
+            clickedAnimals.push(pandaOne);
+          } else if (e.target.id === pandaTile2.id && clickedTiles.indexOf(pandaTile2) === -1) {
+            pandaTile2.alp(0.4);
+            pandaTwo.sca(0.8).addTo(card5).centerReg(card5).animate({
+              props: {scale: 1},
+              ease: "backInOut",
+              time: 500
+            });
+            clickedTiles.push(pandaTile2);
+            clickedAnimals.push(pandaTwo);
+          } else if (e.target.id === pandaTile3.id && clickedTiles.indexOf(pandaTile3) === -1) {
+            pandaTile3.alp(0.4);
+            pandaThree.sca(0.8).addTo(card6).centerReg(card6).animate({
+              props: {scale: 1},
+              ease: "backInOut",
+              time: 500
+            });
+            clickedTiles.push(pandaTile3);
+            clickedAnimals.push(pandaThree);
+          } else if (e.target.id === elephantTile.id && clickedTiles.indexOf(elephantTile) === -1) {
+            elephantTile.alp(0.4);
+            elephantOne.sca(0.7).addTo(card7).centerReg(card7).animate({
+              props: {scale: 0.8},
+              ease: "backInOut",
+              time: 500
+            });
+            clickedTiles.push(elephantTile);
+            clickedAnimals.push(elephantOne);
+          } else if (e.target.id === elephantTile2.id && clickedTiles.indexOf(elephantTile2) === -1) {
+            elephantTile2.alp(0.4);
+            elephantTwo.sca(0.7).addTo(card8).centerReg(card8).animate({
+              props: {scale: 0.8},
+              ease: "backInOut",
+              time: 500
+            });
+            clickedTiles.push(elephantTile2);
+            clickedAnimals.push(elephantTwo);
+          } else if (e.target.id === elephantTile3.id && clickedTiles.indexOf(elephantTile3) === -1) {
+            elephantTile3.alp(0.4);
+            elephantThree.sca(0.7).addTo(card9).centerReg(card9).animate({
+              props: {scale: 0.8},
+              ease: "backInOut",
+              time: 500
+            });
+            clickedTiles.push(elephantTile3);
+            clickedAnimals.push(elephantThree);
+          }
+
+          if (tigers.every(tiger => clickedAnimals.includes(tiger))) {
+            numOfTilesDisposed += 3;
+            timeout(600, function() {
+              card.dispose();
+              card2.dispose();
+              card3.dispose();
+
+              stage.update();
+            });
+          }
+
+          if (pandas.every(panda => clickedAnimals.includes(panda))) {
+            numOfTilesDisposed += 3;
+            timeout(600, function() {
+              card4.dispose();
+              card5.dispose();
+              card6.dispose();
+              // numOfTilesDisposed += 3;
+
+              stage.update();
+            });
+          }
+
+          if (elephants.every(elephant => clickedAnimals.includes(elephant))) {
+            numOfTilesDisposed += 3;
+            timeout(600, function() {
+              card7.dispose();
+              card8.dispose();
+              card9.dispose();
+
+              stage.update();
+            });
+          }
+
+          if (clickedTiles.length > 2) {
+              timeout(600, function() {
+                clickedAnimals.forEach(animal => animal.dispose());
+                clickedTiles.forEach(tile => tile.alp(1));
+                clickedTiles = [];
+                clickedAnimals = [];
+              stage.update();
+            });
+          }
+
+          // tile.dispose();
+          // timeout(1000, function() {
+          //    endGame();
+          //    stage.update();
+          //  });
+
+
+          if (numOfTilesDisposed === 9) {
+            timeout(1000, function() {
+             endGame();
+             stage.update();
+           });
+          }
+
+          stage.update();
+        });
+
+        function endGame() {
+          background.alp(1);
+          tigerOne.alp(0).sca(0).addTo(background);
+          pandaOne.alp(0).sca(0).addTo(background);
+          elephantOne.alp(0).sca(0).addTo(background);
+          tigerOne.animate({
+            props:{alpha:1, scale: 1},
+            ease: "backInOut",
+            time: 1500,
+            wait: 450,
+          }).center(background).mov(-260,150);
+          pandaOne.animate({
+            props:{alpha:1, scale: 1},
+            ease: "backInOut",
+            time: 1500,
+            wait: 350,
+          }).center(background).mov(275,150);
+          elephantOne.animate({
+            props:{alpha:1, scale: 0.9},
+            ease: "backInOut",
+            time: 1500,
+            wait: 250,
+          }).center(background).mov(0,180);
+
+          var congrats = new Label({
+            text: "Congratulations! \n You've discovered your animals!",
+            size: 42,
+            lineHeight: 48,
+            font: "courier",
+            align: "center",
+            color: white
+          }).animate({
+            props: { alpha: 0, scale: 1.5 },
+            ease: "bounceOut",
+            from: true,
+            time: 500,
+            wait: 200
+          }).center(background).mov(0,-200);
+          // stage.update();
+        }
+       
+        stage.update();
+      }
+
+    });
+
+  </script>
+  <meta name="viewport" content="width=device-width, user-scalable=no" />
+</head>
+
+<body></body>
+
+</html>
