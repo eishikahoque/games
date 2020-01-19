@@ -8,34 +8,35 @@
   <script src="https://zimjs.org/cdn/10.7.0/zim.js"></script>
   <script>
     // https://zimjs.com - JavaScript Canvas Framework - Code Creativity!
-
+    const assets = [
+        "tiles.bmp",
+        "tiles2.bmp",
+        "tiles3.bmp",
+        "tiles4.bmp",
+        "tiles5.bmp",
+        "tiles6.bmp",
+        "tiles7.bmp",
+        "tiles8.bmp",
+        "tiles9.bmp",
+        "tiger.bmp",
+        "tiger2.bmp",
+        "tiger3.bmp",
+        "panda.bmp",
+        "panda2.bmp",
+        "panda3.bmp",
+        "elephant.bmp",
+        "elephant2.bmp",
+        "elephant3.bmp",
+        "background.png"
+      ];
+    const path = "images/";
     const frame = new Frame("fit", 1024, 768, light, black);
     frame.on("ready", () => {
       const stage = frame.stage;
       let stageW = frame.width;
       let stageH = frame.height;
 
-      var first = frame.loadAssets([
-        "images/tiles.bmp",
-        "images/tiles2.bmp",
-        "images/tiles3.bmp",
-        "images/tiles4.bmp",
-        "images/tiles5.bmp",
-        "images/tiles6.bmp",
-        "images/tiles7.bmp",
-        "images/tiles8.bmp",
-        "images/tiles9.bmp",
-        "images/tiger.bmp",
-        "images/tiger2.bmp",
-        "images/tiger3.bmp",
-        "images/panda.bmp",
-        "images/panda2.bmp",
-        "images/panda3.bmp",
-        "images/elephant.bmp",
-        "images/elephant2.bmp",
-        "images/elephant3.bmp",
-        "images/background.png"
-      ]);
+      var first = frame.loadAssets(assets, path);
 
       var background = new Container(stageW, stageH).addTo().alp(0.5);
 
@@ -48,7 +49,7 @@
 
         //INSTRUCTIONS
 
-        frame.asset("background.png").addTo(background).center().sca(1.18).mov(-50,-60);
+        asset("background.png").addTo(background).center().sca(1.18).mov(-50,-60);
 
         var instructions = new Container(stageW, stageH).addTo();
 
@@ -81,7 +82,7 @@
           // endGame();
         })
 
-       
+
       });
 
     function startGame() {
@@ -95,25 +96,25 @@
         var card8 = new Container();
         var card9 = new Container();
 
-        var tigerTile = frame.asset("tiles.bmp").addTo(card);
-        var tigerTile2 = frame.asset("tiles2.bmp").addTo(card2);
-        var tigerTile3 = frame.asset("tiles3.bmp").addTo(card3);
-        var pandaTile = frame.asset("tiles4.bmp").addTo(card4);
-        var pandaTile2 = frame.asset("tiles5.bmp").addTo(card5);
-        var pandaTile3 = frame.asset("tiles6.bmp").addTo(card6);
-        var elephantTile = frame.asset("tiles7.bmp").addTo(card7);
-        var elephantTile2 = frame.asset("tiles8.bmp").addTo(card8);
-        var elephantTile3 = frame.asset("tiles9.bmp").addTo(card9);
+        var tigerTile = asset("tiles.bmp").addTo(card);
+        var tigerTile2 = asset("tiles2.bmp").addTo(card2);
+        var tigerTile3 = asset("tiles3.bmp").addTo(card3);
+        var pandaTile = asset("tiles4.bmp").addTo(card4);
+        var pandaTile2 = asset("tiles5.bmp").addTo(card5);
+        var pandaTile3 = asset("tiles6.bmp").addTo(card6);
+        var elephantTile = asset("tiles7.bmp").addTo(card7);
+        var elephantTile2 = asset("tiles8.bmp").addTo(card8);
+        var elephantTile3 = asset("tiles9.bmp").addTo(card9);
 
-        var tigerOne = frame.asset("tiger.bmp");
-        var tigerTwo = frame.asset("tiger2.bmp");
-        var tigerThree = frame.asset("tiger3.bmp");
-        var pandaOne = frame.asset("panda.bmp");
-        var pandaTwo = frame.asset("panda2.bmp");
-        var pandaThree = frame.asset("panda3.bmp");
-        var elephantOne = frame.asset("elephant.bmp"); 
-        var elephantTwo = frame.asset("elephant2.bmp"); 
-        var elephantThree = frame.asset("elephant3.bmp");
+        var tigerOne = asset("tiger.bmp");
+        var tigerTwo = asset("tiger2.bmp");
+        var tigerThree = asset("tiger3.bmp");
+        var pandaOne = asset("panda.bmp");
+        var pandaTwo = asset("panda2.bmp");
+        var pandaThree = asset("panda3.bmp");
+        var elephantOne = asset("elephant.bmp");
+        var elephantTwo = asset("elephant2.bmp");
+        var elephantThree = asset("elephant3.bmp");
 
         var tigers = [tigerOne, tigerTwo, tigerThree];
         var pandas = [pandaOne, pandaTwo, pandaThree];
@@ -129,7 +130,7 @@
           clone: false
         }).sca(0.75).center();
 
-       
+
         // CLICK ON TILES
 
         var clickedTiles = [];
@@ -323,7 +324,7 @@
           }).center(background).mov(0,-200);
           // stage.update();
         }
-       
+
         stage.update();
       }
 
