@@ -1,0 +1,694 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Olaf: Mission Party</title>
+<link href="https://fonts.googleapis.com/css?family=Alice&display=swap" rel="stylesheet">
+<script src="https://zimjs.org/cdn/1.2.3/createjs_min.js"></script>
+<script src="https://zimjs.org/cdn/10.7.1/zim.js"></script>
+<script src="https://d309knd7es5f10.cloudfront.net/pizzazz_02.js"></script>
+<script>
+// https://zimjs.com - JavaScript Canvas Framework - Code Creativity!
+STYLE = { font: "Alice" };
+
+var assets = [ "balloon-left.png", "balloon-right.png", "cake-table.png", "cake.png",  "heart.png", "snowgie.bmp", "melted-olaf.png", "background.png", "carrot.png", "carrot-bundle.png", "fire.png", "snowball.png", "eye.bmp", "eye2.bmp", "head.bmp", "hand1.bmp", "hand2.bmp", "stone1.bmp", "stone2.bmp", "stone3.bmp", "nose.bmp", "eyebrow.bmp", "feet.bmp", "mid-body.bmp", "hat.bmp", "hair.bmp", "olaf.bmp", "snowball.mp3", "fire.mp3", "carrot.mp3", "music.mp3" ];
+var path = "images/";
+
+const SCORE_HIGH = 20;
+var ALLOWED_CARROT_BUNDLES = 3;
+var score = 0;
+var life = 5;
+
+const frame = new Frame("fit", 1024, 768, black, black, assets, path);
+frame.on("ready", () => {
+  const stage = frame.stage;
+  let stageW = frame.width;
+  let stageH = frame.height;
+
+  var carrotIcon = asset("carrot.png");
+  var carrotsIcon = asset("carrot-bundle.png");
+  var fireIcon = asset("fire.png");
+  var snowballIcon = asset("snowball.png");
+
+  var game = new Container(stageW, stageH).center();
+
+  asset("background.png").alp(0.9).addTo(game);
+
+  var meltedOlaf = asset("melted-olaf.png")
+    .centerReg()
+    .mov(0, 200)
+    .addTo(game);
+
+  var message = new Label({
+    text: " Oh no Olaf melted! \n Can you help Olaf attend the party?",
+    size: 52,
+    paddingVertical: 20,
+    align: "center",
+    backgroundColor: "#AFC4E1",
+    color: white
+  }).animate({
+    props: { alpha: 0, scale: 2},
+    from: true,
+    time: 1000,
+    wait: 100
+  }).pos(10, 70, CENTER, TOP, game);
+
+  var snowgie = asset("snowgie.bmp");
+
+  var snowgie1 = snowgie.clone().pos(800, 550).animate({
+    props:{y:500},
+    time: 200,
+    ease: "linear",
+    loop: true,
+    rewind: true,
+    from: true
+  });
+
+  var snowgie2 = snowgie.sca(0.9).clone().pos(100, 550).animate({
+    props:{y:475},
+    time: 400,
+    ease: "linear",
+    loop: true,
+    rewind: true,
+    from: true
+  });
+
+  var snowgie3 = snowgie.sca(0.7).clone().pos(250, 490).animate({
+    props:{y:475},
+    time: 200,
+    ease: "linear",
+    loop: true,
+    rewind: true,
+    from: true
+  });
+
+  var snowgie4  = snowgie.sca(0.8).clone().pos(650, 490).animate({
+    props:{y:455},
+    time: 250,
+    ease: "linear",
+    loop: true,
+    rewind: true,
+    from: true
+  });
+
+  var playBtn = new Button ({
+    label: "PLAY",
+    width: 200,
+    height: 100,
+    color: white,
+    backgroundColor: "#0060A8",
+    rollBackgroundColor: "#AFC4E1",
+    corner: 8
+  });
+  var playAgainBtn = new Button ({
+    label: "PLAY\nAGAIN",
+    width: 200,
+    height: 100,
+    color: white,
+    backgroundColor: "#0060A8",
+    rollBackgroundColor: "#AFC4E1",
+    corner: 8
+  });
+
+  playBtn.center(game).mov(0,-80);
+  playBtn.on("click", function() {
+    message.dispose();
+    meltedOlaf.dispose();
+    playBtn.dispose();
+    snowgie1.dispose();
+    snowgie2.dispose();
+    snowgie3.dispose();
+    snowgie4.dispose();
+
+    var olaf;
+    makeOlaf();
+  });
+
+  var refreshBtn = new Button({
+    width: 150,
+    height: 50,
+    label: "Restart",
+    backgroundColor: "#0060A8",
+    rollBackgroundColor: "#AFC4E1",
+    color: "#fff"
+  });
+
+  function makeOlaf(){
+
+    refreshBtn.pos(10, 10, LEFT, BOTTOM, game);
+    refreshBtn.on("click", function() {
+      olaf.removeFrom();
+      makeOlaf();
+      stage.update();
+    });
+
+    olaf = new Container(180,460);
+
+    var body = asset("olaf.bmp")
+      .centerReg(olaf)
+      .animate({
+        wait: 200,
+        props:{alpha:0},
+        from: true
+      }).sca(1.1);
+
+    olaf.centerReg().mov(0,150);
+
+    var s = series(
+      asset("eye.bmp").sca(1.1),
+      asset("eye2.bmp").sca(1.1),
+      asset("stone1.bmp").sca(1.1),
+      asset("stone2.bmp").sca(1.1),
+      asset("stone3.bmp").sca(1.1),
+      asset("eyebrow.bmp").sca(1.1),
+      asset("nose.bmp").sca(1.1),
+      asset("hair.bmp").sca(1.1),
+      asset("hand1.bmp").sca(1.1),
+      asset("hand2.bmp").sca(1.1)
+    )
+
+    var bodyParts = new Tile(s,5,2,30,30)
+      .center(olaf)
+      .mov(0,-350)
+      .drag()
+      .animate({
+        wait: 200,
+        props:{alpha:0},
+        from: true,
+        sequence: 250,
+        time: 200
+      });
+
+    bodyParts.on("pressup", function() {
+      var count = 0;
+      bodyParts.loop(function(bodyParts) {
+        if (bodyParts.hitTestBounds(body)) {
+          count++;
+        }
+      });
+
+      if (count == bodyParts.numChildren) {
+
+        olaf.mouseChildren = false;
+        olaf.animate({
+          props:{x:stageW+200},
+          wait: 500,
+          time: 1500,
+          call: instructions
+        });
+      }
+    });
+  stage.update();
+}
+
+  function instructions() {
+    refreshBtn.removeFrom();
+
+    let instructions = new Label({
+      text: `Yay! Collect         to reveal the cake \n by moving your mouse!`,
+      size: 42,
+      align: "center",
+      backgroundColor: "#AFC4E1",
+      color: white
+    }).animate({
+      props: { alpha: 0, scale: 2},
+      from: true,
+      time: 1000,
+      wait: 200
+    }).center().mov(0, -100);
+
+    let warnings = new Label({
+      text: `Beware               -1 carrot \n \n-1 life \n \n Bonus              +5 carrots`,
+      size: 36,
+      paddingVertical: 20,
+      backgroundColor: "#AFC4E1",
+      align: "center",
+      color: white
+    }).animate({
+      props: { alpha: 0, scale: 2},
+      from: true,
+      time: 1000,
+      wait: 200
+    }).center().mov(0, 300);
+    timeout(500, function() {
+      carrotIcon.sca(1.1).center().mov(-55,-180).animate({
+        props: { alpha: 0, scale: 2},
+        from: true,
+        time: 1000,
+        wait: 200
+      });
+      carrotsIcon.center().mov(-20,290).animate({
+        props: { alpha: 0, scale: 2},
+        from: true,
+        time: 1000,
+        wait: 200
+      });
+      fireIcon.sca(0.8).center().mov(-105,210).animate({
+        props: { alpha: 0, scale: 2},
+        from: true,
+        time: 1000,
+        wait: 200
+      });
+      snowballIcon.sca(0.9).center().mov(-15,130).animate({
+        props: { alpha: 0, scale: 2},
+        from: true,
+        time: 1000,
+        wait: 200
+      });
+    });
+
+    let startBtn = new Button ({
+      label: "START",
+      width: 200,
+      height: 100,
+      color: white,
+      backgroundColor: "#0060A8",
+      rollBackgroundColor: "#AFC4E1",
+      corner: 8
+    });
+
+    startBtn.center();
+    startBtn.on("click", function() {
+      instructions.dispose();
+      warnings.dispose();
+      carrotsIcon.dispose();
+      carrotIcon.dispose();
+      fireIcon.dispose();
+      snowballIcon.dispose();
+      startBtn.dispose();
+      catchCarrot();
+    });
+  }
+
+
+
+  function catchCarrot() {
+// buttons for nav
+    var pauseBtn = new Button({
+      label:"",
+      width: 75,
+      height: 75,
+      corner: 5,
+      icon: pizzazz.makeIcon("pause", white).alp(.7),
+      toggleIcon: pizzazz.makeIcon("play", white).alp(.7),
+      backgroundColor: "#0060A8",
+      rollBackgroundColor: "#AFC4E1"
+    }).pos(10, 10, LEFT, TOP, game);
+
+    var isGamePaused = false;
+    pauseBtn.on("click", function() {
+      if (!isGamePaused) {
+        pauseGame();
+      } else {
+        restartGame();
+      }
+
+      isGamePaused = !isGamePaused;
+
+      stage.update();
+    });
+
+// Life Tally
+    var heart = asset("heart.png").sca(0.5).pos(40, 10, RIGHT, TOP, game);
+    var heartLabel = new Label({
+      text: life,
+      size: 62,
+      color: white
+    }).pos(10, 10, RIGHT, TOP, game);
+
+//score keeping
+    var cake = asset("cake.png").alp(0).sca(0.7).pos(40, 10, RIGHT, BOTTOM, game);
+
+//olaf
+    olaf.sca(0.6).loc(game.width / 2, game.height-110, game);
+    olaf.reg(olaf.width/2, olaf.height);
+
+    stage.on("stagemousemove", startGame, null, true); // only once
+      function startGame() {
+
+        Ticker.add(animate);
+
+        dropFire();
+        dropSnowball();
+        dropCarrots();
+        dropCarrotBundles();
+      }
+// make fire
+    const fireInterval = interval([400, 5000], function() {
+      var fire = asset("fire.png").sca(0.6).clone();
+      fire
+        .reg(fire.width/2, fire.height/2)
+        .loc(rand(fire.width, game.width-fire.width -cake.width), -10, fireList);
+
+      var explosion = new Emitter({
+        obj: fire,
+        life: 200,
+        decayTime: 200
+      });
+      explosion.reg(explosion.width, explosion.height);
+      fire.explosion = explosion;
+    });
+
+    const fireList = new Container().addTo(game);
+    function dropFire() {
+      fireInterval.pause(false);
+    }
+
+//make snowball
+    const snowballInterval = interval([200,3500], function() {
+      var snowball = asset("snowball.png").sca(0.6).clone();
+      snowball
+        .reg(snowball.width/2, snowball.height/2)
+        .loc(rand(snowball.width, game.width-snowball.width),-10, snowballs);
+
+      var explosion = new Emitter({
+        obj: snowball,
+        life: 100,
+        decayTime: 200
+      });
+
+      explosion.reg(explosion.width/2, explosion.height-10);
+      snowball.explosion = explosion;
+    });
+
+    const snowballs = new Container().addTo(game);
+    function dropSnowball(){
+      snowballInterval.pause(false);
+    }
+
+// make carrots
+    const carrotInterval = interval([250, 5500], function() {
+      let carrot = asset("carrot.png").sca(1).clone();
+      carrot
+        .reg(carrot.width/2, carrot.height/2)
+        .loc(rand(carrot.width, game.width-carrot.width), -10, carrots);
+    });
+    const carrots = new Container().addTo(game);
+    function dropCarrots() {
+      carrotInterval.pause(false);
+    }
+
+//make carrot bundle
+    let carrotBundleCount = 0;
+    const carrotBundleInterval = interval([5000, 20000], function() {
+
+      if (carrotBundleCount < ALLOWED_CARROT_BUNDLES) {
+        let carrotBundle = asset("carrot-bundle.png").sca(1).clone();
+        carrotBundle
+          .reg(carrotBundle.width/2, carrotBundle.height/2)
+          .loc(rand(carrotBundle.width, game.width-carrotBundle.width), -10, carrotBundles);
+      }
+      carrotBundleCount++;
+    });
+
+    const carrotBundles = new Container().addTo(game);
+
+    function dropCarrotBundles() {
+      carrotBundleInterval.pause(false);
+    }
+
+    var damp = new Damp(null, .3);
+    damp.immediate(olaf.x);
+
+
+// Speed of the game
+    const speed = 10;
+
+//keeping track of scores and life
+    function animate(e) {
+
+      if (score >= SCORE_HIGH) {
+        gameOverWin();
+      } else if (life <= 0) {
+        gameOver();
+      }
+
+      if (stage.mouseX > 990) {
+        stage.mouseX = 990;
+      }
+
+      olaf.x = damp.convert(stage.mouseX-game.x);
+
+      loop(fireList, function(fire) {
+        fire.y+=speed;
+
+        if (olaf.hitTestBounds(fire)) {
+          life -= 1;
+          heartLabel.text= life;
+          asset("fire.mp3").play();
+          explode(fire);
+        }
+
+        if (fire.y >= game.height+10) {
+          remove(fire);
+
+        }
+
+      }, true);
+
+      loop(snowballs, function(snowball) {
+
+        snowball.y+=speed;
+
+        if (olaf.hitTestBounds(snowball)) {
+
+          if (score >= 0) {
+            score -= 1;
+          }
+
+          if (cake.alpha >= 0.05) {
+            cake.alpha -= 0.05;
+          }
+          asset("snowball.mp3").play();
+          explode(snowball);
+        }
+        if (snowball.y >= game.height+10) {
+          remove(snowball);
+        }
+
+      }, true);
+
+      carrots.loop(function(carrot) {
+        carrot.y+=speed;
+        if (olaf.hitTestBounds(carrot)) {
+          score += 1;
+
+          if (cake.alpha < 1) {
+            cake.alpha += 0.05;
+          }
+
+          asset("carrot.mp3").play();
+          grab(carrot);
+
+        }
+
+        if (carrot.y >= game.height+carrot.height+10) {
+
+          remove(carrot); // our remove function at bottom of code
+        }
+      }, true); // true loops backwards as we are removing children
+
+      carrotBundles.loop(function(carrotBundle) {
+        carrotBundle.y+=speed;
+        if (olaf.hitTestBounds(carrotBundle)) {
+          score += 3;
+
+          if (cake.alpha < 1) {
+            cake.alpha += 0.25;
+          }
+
+          asset("carrot.mp3").play();
+          grab(carrotBundle);
+
+
+        }
+
+        if (carrotBundle.y >= game.height+carrotBundle.height+10) {
+
+          remove(carrotBundle); // our remove function at bottom of code
+        }
+      }, true); // true loops backwards as we are removing children
+
+    }
+
+    function explode(fire) {
+      var explosion = fire.explosion;
+      if (explosion) {
+        explosion
+          .loc(fire)
+          .animate({alpha:0}, 100, null, remove, null, 100); // last param is wait
+      }
+      remove(fire)
+    }
+
+    function explode(snowball) {
+      var explosion = snowball.explosion;
+      if (explosion) {
+        explosion
+          .loc(snowball)
+          .animate({alpha:0, x:300}, 100, null, remove, null, 100); // last param is wait
+      }
+      remove(snowball)
+    }
+
+    function grab(carrot) {
+      carrot
+        .addTo(game)
+        .loc(carrot.x, olaf.y-olaf.height-20)
+        .animate({alpha:0}, 100, null, remove, null, 100); // last param is wait;
+      remove(carrot);
+    }
+
+    function remove(obj) {
+      obj.removeFrom();
+      obj = null;
+    }
+
+    function gameOverWin() {
+      carrotInterval.clear();
+      carrotBundleInterval.clear();
+      fireInterval.clear();
+      snowballInterval.clear();
+      cake.dispose();
+      heart.dispose();
+      heartLabel.dispose();
+      pauseBtn.dispose();
+
+      carrots.loop(function(carrot) {
+        carrot.dispose();
+      });
+
+      snowballs.loop(function(snowball) {
+        snowball.dispose();
+      });
+
+      fireList.loop(function(fire) {
+        fire.dispose();
+      });
+
+      Ticker.remove(animate);
+
+
+      timeout(500, function() {
+        asset("balloon-left.png").center().mov(-190,100).addTo(game);
+        asset("balloon-right.png").center().mov(190,100).addTo(game);
+        asset("cake-table.png").center().mov(0,200).addTo(game);
+        snowgie.clone().pos(850, 650).animate({
+          props:{y:600},
+          time: 300,
+          ease: "linear",
+          loop: true,
+          rewind: true,
+          from: true
+        });
+
+        snowgie.sca(0.9).clone().pos(50, 650).animate({
+          props:{y:575},
+          time: 350,
+          ease: "linear",
+          loop: true,
+          rewind: true,
+          from: true
+        });
+
+        snowgie.sca(0.7).clone().pos(150, 600).animate({
+          props:{y:475},
+          time: 400,
+          ease: "linear",
+          loop: true,
+          rewind: true,
+          from: true
+        });
+
+        snowgie.sca(0.8).clone().pos(750, 600).animate({
+          props:{y:550},
+          time: 350,
+          ease: "linear",
+          loop: true,
+          rewind: true,
+          from: true
+        });
+
+        olaf.pos(270, 480).addTo(game);
+
+        let congrats = new Label({
+          text: "Congrats! \n Thanks for helping Olaf get to the party!",
+          size: 48,
+          align: "center",
+          backgroundColor: "#AFC4E1",
+          color: white
+        }).animate({
+          props: { alpha: 0, scale: 2},
+          from: true,
+          time: 1000,
+          wait: 300
+        }).pos(10, 10, CENTER, TOP, game);
+
+
+        playAgainBtn.center().mov(0,-100);
+        playAgainBtn.on("click", function() {
+          window.location.reload();
+        });
+      });
+    }
+
+    function pauseGame() {
+      carrotInterval.pause(true);
+      carrotBundleInterval.pause(true);
+      fireInterval.pause(true);
+      snowballInterval.pause(true);
+      Ticker.remove(animate);
+    }
+
+    function restartGame() {
+      carrotInterval.pause(false);
+      carrotBundleInterval.pause(false);
+      fireInterval.pause(false);
+      snowballInterval.pause(false);
+      Ticker.add(animate);
+    }
+
+    function gameOver() {
+
+      carrotInterval.clear();
+      carrotBundleInterval.clear();
+      fireInterval.clear();
+      snowballInterval.clear();
+
+      carrots.loop(function(carrot) {
+        carrot.removeFrom();
+      });
+
+      snowballs.loop(function(snowball) {
+        snowball.removeFrom();
+      });
+
+      fireList.loop(function(fire) {
+        fire.removeFrom();
+      });
+
+      Ticker.remove(animate);
+
+      timeout(500, function() {
+
+        playAgainBtn.center(game).mov(0,-80);
+        playAgainBtn.on("click", function() {
+          window.location.reload();
+        });
+      })
+    }
+    stage.update();
+  }
+
+
+
+
+
+ stage.update();
+});
+
+</script>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+</head>
+<body></body>
+</html>
